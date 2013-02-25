@@ -1,0 +1,5 @@
+cvlc --video-title="video" /home/al/Vídeos/docus/Dub\ Echoes\ \(2007\)/dub_echoes-blg.avi 
+// para mover ventanans y asi:
+wmctrl -lG 
+// gravity,x,y,width,height
+wmctrl -r "video" -e 0,0,0,1000,700

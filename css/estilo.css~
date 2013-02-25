@@ -1,0 +1,63 @@
+body {background:gray;}
+#main {
+    width:1010px;
+    margin:70px auto;
+}
+#imagenes img {
+    width:500px;
+    margin:0;border-radius:20px;
+}
+#imagenes img:hover{
+    cursor:pointer;
+}
+#info {
+    display: block;
+    width: 700px;
+    height: auto;
+    /*background: rgba(255, 0, 0, 0.79);*/background:#F8F36B;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 50px;
+    font-family: verdana;font-weight:bold;text-align:center;
+    vertical-align: middle;
+    line-height: 110px;
+    border-radius: 20px;
+    padding: 35px;
+    margin:-100px 0 0 -350px;
+    display:none;
+}
+#testfoto {
+    display:none;
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    margin:-300px 0 0 -350px;
+}
+#testfoto img {
+    width:700px;
+}
+#config {
+    position:absolute;bottom:0;right:0;display:block;width:32px;height:32px;background:transparent url(../images/config.png) no-repeat top left;
+}
+#camera {
+    position:absolute;bottom:0;left:0;display:block;width:32px;height:32px;background:transparent url(../images/canon.png) no-repeat top left;
+}
+#color-actual {
+    position:absolute;bottom:8px;right:40px;display:block;width:16px;height:16px;border-radius:8px;
+}
+#controles {margin-bottom:20px;}
+#controles input.input {
+    border: none;
+    padding: 8px;
+    background: #F8F36B;
+    font-family: verdana;
+    font-weight: bold;
+    border-radius: 15px;
+}
+#controles input.input.verde{background:#6BF882;}
+#color1 {float:left;}
+#th-val {float:right;color: white;font-family: verdana;font-weight: bold;}
+#slider,#escala {margin:10px 0 20px 0;}
+#ok {float:right;}
+.desconectado {opacity:0.3;}

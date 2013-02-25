@@ -1,0 +1,165 @@
+function rgbToHex(R,G,B) {return "#"+toHex(R)+toHex(G)+toHex(B)}
+function toHex(N) {
+ if (N==null) return "00";
+ N=parseInt(N); if (N==0 || isNaN(N)) return "00";
+ N=Math.max(0,N); N=Math.min(N,255); N=Math.round(N);
+ return "0123456789ABCDEF".charAt((N-N%16)/16)
+      + "0123456789ABCDEF".charAt(N%16);
+}  
+function check_camera(){
+    $.ajax({
+        url:"cgi/check_camera.cgi",
+        dataType:"json"
+    }).done(function(json){
+        $("#camera").toggleClass("desconectado",json.estado == 0);
+        
+    });
+}
+function preview(img, selection) {
+     
+}   
+function setSize(img, selection){
+    localStorage.x1 = selection.x1;
+    localStorage.y1 = selection.y1;
+    localStorage.x2 = selection.x2;
+    localStorage.y2 = selection.y2;
+    localStorage.width = selection.width;
+    localStorage.height = selection.height;
+    console.log("tamaño cambiado a:"+localStorage.getItem('width')+"x"+localStorage.getItem('height'));
+    console.log("posiciones: x1-"+selection.x1+" y1-"+selection.y1+" x2-"+selection.x2+" y2"+selection.y2);
+}
+$(document).ready(function() {
+    var ias = false;
+    check_camera()
+    setInterval(check_camera,3000);
+    $("#color-actual").css('background-color',"rgb("+localStorage.getItem('r')+","+localStorage.getItem('g')+","+localStorage.getItem('b')+")");
+    console.log("el tamaño actual:"+localStorage.getItem('width')+"x"+localStorage.getItem('height'));
+    console.log("el color actual:rgb("+localStorage.getItem('r')+","+localStorage.getItem('g')+","+localStorage.getItem('b')+")");
+    $("#color1").val(rgbToHex(localStorage.getItem('r'),localStorage.getItem('g'),localStorage.getItem('b')));
+    $("#th-val").html(localStorage.getItem('threshold'));
+    //---------------------------------
+    $("#slider").slider({range:"min",min:0,max:50,value:localStorage.threshold,slide: function( event, ui ) {
+        localStorage.threshold = ui.value;
+        $("#th-val").html(ui.value);
+        console.log(localStorage.threshold);
+        }
+    });
+    $("#escala").slider({range:"min",min:1,max:10,value:localStorage.escala*10,slide: function( event, ui ) {
+        localStorage.escala = Number((ui.value*0.1).toFixed(1));
+        //$("#th-val").html(ui.value);
+        console.log(localStorage.getItem('escala'));
+        }
+    });
+    $("#color1").change(function(){        
+        var hexStr = $(this).val();  // 190 ie bebebe
+        var hex = parseInt(hexStr.substring(1), 16);
+        localStorage.r = (hex & 0xff0000) >> 16;
+        localStorage.g = (hex & 0x00ff00) >> 8;
+        localStorage.b = hex & 0x0000ff;
+        $("#color-actual").css('background-color',"rgb("+localStorage.getItem('r')+","+localStorage.getItem('g')+","+localStorage.getItem('b')+")");
+        console.log(localStorage.getItem('r'));
+    });
+    //--------------- CONFIGURACION-----------------
+    $("#config").on('click',function(){
+        $.ajax({
+                        url:"cgi/script.py",
+                        data:{accion:"0", fondo:"2",foto:"al.jpg"},
+                        dataType:"json",
+                        beforeSend: function(){
+                            console.log("test..."); 
+                            $('#imagenes').fadeOut();                      
+                        }                
+
+                    }).done(function(jsonTest){
+                        //console.log(jsonTest);
+                        localStorage.testFoto = jsonTest.foto;
+                        var img = $("<img />").attr({'src':'http://192.168.1.10:81/eclipse/cromaton/images/orig/'+jsonTest.foto+'.jpg','id':'img-conf','name':jsonTest.foto})
+                        .load(function() {
+                            if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
+                                alert('broken image!');
+                            } else {
+                                $("#testfoto").append(img).show();
+                                    ias = $("#img-conf").imgAreaSelect({ imageWidth:1504,imageHeight:1000,handles: true,fadeSpeed: 200, x1:localStorage.getItem('x1'),y1:localStorage.getItem('y1'),x2:localStorage.getItem('x2'),y2:localStorage.getItem('y2'), onSelectEnd: setSize,instance: true  });
+                                    $("#ok").on('click',function(){
+                                        ias.setOptions({ hide: true });
+                                        $("#testfoto img").remove();
+                                        $("#testfoto").fadeOut();
+                                        $('#imagenes').fadeIn();
+                                    });
+                                        
+                            }
+                        });
+                    });
+    });
+    //--------------- PRUEBA -----------------
+    $("#probar").on('click',function(){
+        $.ajax({
+                    url:"cgi/script.py",
+                    data:{accion:"1", fondo:3,foto:localStorage.testFoto,r:localStorage.getItem('r'),g:localStorage.getItem('g'),b:localStorage.getItem('b'),x1:localStorage.getItem('x1'),y1:localStorage.getItem('y1'),w:localStorage.getItem('width'),h:localStorage.getItem('height'),th:localStorage.getItem('threshold'),escala:localStorage.getItem('escala')},
+                    dataType:"json",
+                    beforeSend: function(){
+                        console.log("mando cromar prueba...");  
+                        $("#info").html('creando croma..');                      
+                    }                
+                }).done(function(json){
+                    ias.setOptions({ hide: true });
+                    $("#testfoto img").remove();
+                    var img = $("<img />").attr({'src':'http://192.168.1.10:81/eclipse/cromaton/images/croma/'+json.foto,'id':'img-conf','name':json.foto+'.jpg'})
+                        .load(function() {
+                            if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
+                                alert('broken image!');
+                            } else {
+                                $("#testfoto").append(img).show();
+                            }
+                        });
+                });    
+    });
+    //--------------- DESKTOP -----------------
+    $('#imagenes img').on('click',function(){
+        console.log("selecciono fondo:"+$(this).attr('name'));
+        /*$.getJSON("cgi/script.py",{accion:"0", fondo:$(this).attr('name'),foto:"al.jpg"},function(json){
+            console.log("JSON Data: " + json.fondo + json.foto);
+        });*/
+        $.ajax({
+            url:"cgi/script.py",
+            data:{accion:"0", fondo:$(this).attr('name'),foto:"al.jpg"},
+            dataType:"json",
+            beforeSend: function(){
+                console.log("mando sacar foto...");
+                $("#imagenes").css("opacity","0.3");
+                $("#info").toggle().html('tomando foto..');
+            }
+        }).done(function(json){
+                    console.log("JSON Data: " + json.fondo + json.foto);
+                    $.ajax({
+                        url:"cgi/script.py",
+                        data:{accion:"1", fondo:json.fondo,foto:json.foto,r:localStorage.getItem('r'),g:localStorage.getItem('g'),b:localStorage.getItem('b'),x1:localStorage.getItem('x1'),y1:localStorage.getItem('y1'),w:localStorage.getItem('width'),h:localStorage.getItem('height'),th:localStorage.getItem('threshold'),escala:localStorage.getItem('escala')},
+                        dataType:"json",
+                        beforeSend: function(){
+                            console.log("mando cromar...");  
+                            $("#info").html('creando croma..');                      
+                        }                
+
+                    }).done(function(json2){
+                        $.ajax({
+                        url:"cgi/script.py",
+                        data:{accion:"2", fondo:json2.fondo,foto:json2.foto},
+                        dataType:"json",
+                        beforeSend: function(){
+                            console.log("mando mando imprimir...");
+                            $("#info").html('enviando a impresora..');
+                        }                
+
+                        }).done(function(json3){                            
+                            console.log("impreso")
+                            $("#info").html('imprimir..').fadeOut(800);
+                            $("#imagenes").css("opacity","1");
+                        });
+                    });
+            
+        });
+    });
+    
+});
+		               
+		           

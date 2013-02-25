@@ -1,0 +1,17 @@
+#!/bin/bash
+
+
+# The HTML output starts here
+echo "Content-type: text/html"
+echo ""
+
+lsusb | grep Nikon > /dev/null
+if [ $? != 0 ]; then
+	    echo "{\"estado\":\"0\"}"
+	    exit 0
+else
+        echo "{\"estado\":\"1\"}"
+        echo $value
+        exit 0
+fi
+	    

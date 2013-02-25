@@ -1,0 +1,45 @@
+<?php
+
+?>
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Croma</title>
+<link rel='stylesheet' type='text/css' href="./css/reset.css" media='all' />	
+<link rel='stylesheet' type='text/css' href="./css/estilo.css" media='all' />
+<link rel='stylesheet' type='text/css' href="./css/sunny/jquery-ui-1.10.0.custom.min.css" media='all' />
+<link rel='stylesheet' type='text/css' href="./css/imgareaselect-default.css" media='all' />	
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.10.0.custom.min.js"></script>
+<script type="text/javascript" src="js/jquery.imgareaselect.js"></script>
+<script type="text/javascript" src="./js/funciones.js" ></script>
+</head>
+<body>
+<div id="main">
+    <div id="paso1">
+        <div id="imagenes">
+            <img src="./images/fondo1.redimensionado.png" name="1"/>
+            <img src="./images/fondo2.redimensionado.png" name="2"/>
+            <img src="./images/fondo3.redimensionado.png" name="3"/>
+        </div>
+    </div>
+</div>
+<div id="info">Imprimiendo</div>
+<a href="#" name="camera" id="camera"></a>
+<a href="#" name="test" id="config"></a>
+<a href="#" name="color" id="color-actual"></a>
+<div id="testfoto">
+    <div id="controles">
+        <input name="colorpicker" id="color1" type="color"/>
+        <div id="th-val"></div>        
+        <div style="clear:both;"></div>
+        <div id="slider"></div>
+        <div id="escala"></div>
+        <input value="probar" type="button" id="probar" class="input"/>        
+    <input value="guardar" type="button" id="ok" class="input verde"/>
+        
+    </div>
+</div>
+</body>
+</html>
+
